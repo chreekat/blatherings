@@ -75,9 +75,9 @@ Notes:
 
 1. Any number of qualifications per module (maybe a bad idea, but presented for discussion)
 2. Same whitespace rules (and reduction to whitespace-independent braces and semicolons) as other syntaxes
-3. `unqualified` line must come last
+3. `unqualified` stanza must come last
 4. The equivalent of `import Data.List as L` is possible, but unweildy
-5. Imports switch to qualified-by-default, since it is otherwise surprising that removing an 'as' stanza makes an import suddenly switch from qualified to unqualified.
+5. Imports switch to qualified-by-default, since it is otherwise surprising that removing an `as` stanza makes an import suddenly switch from qualified to unqualified.
 
 The equivalent stanzas in today's syntax would be
 
