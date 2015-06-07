@@ -77,6 +77,7 @@ Notes:
 2. Same whitespace rules (and reduction to whitespace-independent braces and semicolons) as other syntaxes
 3. `unqualified` line must come last
 4. The equivalent of `import Data.List as L` is possible, but unweildy
+5. Imports switch to qualified-by-default, since it is otherwise surprising that removing an 'as' stanza makes an import suddenly switch from qualified to unqualified.
 
 The equivalent stanzas in today's syntax would be
 
@@ -105,8 +106,9 @@ import Data.List as L
 ```
 
 
-As a final note, my second proposal is *very* similar to my first, and doing away with all the whitespace changes would make them nearly identical. Except for two things:
+My second proposal is *very* similar to my first, and doing away with all the whitespace changes would make them nearly identical. There are three meaningful differences:
 
 1. Backwards compatibility is broken by removing the `qualified` keyword
+2. Backwards compatibility is taken out back and shot by making imports qualified-by-default
 2. The nonsense line `import Data.List as L unqualified` is made illegal by breaking individual import stanzas 
 into individual statements
