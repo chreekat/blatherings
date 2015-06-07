@@ -1,7 +1,8 @@
 The long reply
 ==============
 
-> On Wednesday, June 3, 2015 at 12:02:17 PM UTC-7, Anthony Cowley wrote:  
+On Wednesday, June 3, 2015 at 12:02:17 PM UTC-7, Anthony Cowley wrote:
+> 
 > On Wed, Jun 3, 2015 at 1:43 PM, Richard Eisenberg <e...@cis.upenn.edu> wrote: 
 > > I have to say I'm a big -1 on the proposed syntax -- it's awfully confusing 
 > > to have the import list mean something entirely different before the `as` 
@@ -19,6 +20,9 @@ The long reply
 > wild. 
 > 
 
+Feelings on the proposal
+------------------------
+
 The most surprising thing to me about the existing import syntax is that you can
 import the same module twice. I like that this
 proposal does away with the most common use for that. Terser syntax is also a plus,
@@ -30,7 +34,7 @@ The syntax of "ln" strikes me as a valid parallel.
 
 Further, it makes the difference between `import Foo (f) as F` and `import Foo as F` very surprising. That's -1 all by itself. I would grimace every time I tried to teach this to a new Haskeller.
 
-Proposal #1
+Alternate Proposal #1
 ------------
 
 If someone held a gun to my head and forced me to improve import syntax without breaking existing code, I would suggest modifying the "import qualified" syntax instead:
@@ -41,7 +45,7 @@ If someone held a gun to my head and forced me to improve import syntax without 
 
 Even that proposal has weird corner cases like `import qualified Foo.Quuz.Bar as B unqualified`, however. Either that line is allowed, which makes for nonsense, or it is disallowed, which feels arbitrary.
 
-Proposal #2
+Alternate Proposal #2
 -----------
 
 I think trying to force psuedo-English on the syntax is the real problem. I can't think of any way to improve it while keeping compatibility. While it is probably just wishful thinking, I'd rather just see
@@ -70,7 +74,7 @@ Notes:
 1. Any number of qualifications per module (maybe a bad idea, but presented for discussion)
 2. Same whitespace rules (and reduction to whitespace-independent braces and semicolons) as other syntaxes
 3. `unqualified` line must come last
-4. The equivalent of `import Data.List as L` is possible, but unweildy.
+4. The equivalent of `import Data.List as L` is possible, but unweildy
 
 The equivalent stanzas in today's syntax would be
 
@@ -86,9 +90,8 @@ import Data.Map (Map, foldrWithKey)
 import Data.List as L
 ```
 
-As a final note, this final proposal is *very* similar to the one I listed in the second section, except for
-two things.
+As a final note, my second proposal is *very* similar to my first, and doing away with all the whitespace changes would make them nearly identical. Except for two things:
 
-1. Backwards compatibility is broken by removing the `qualified` keyword.
+1. Backwards compatibility is broken by removing the `qualified` keyword
 2. The nonsense line `import Data.List as L unqualified` is made illegal by breaking individual import stanzas 
-into individual statements.
+into individual statements
