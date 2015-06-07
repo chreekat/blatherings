@@ -32,7 +32,9 @@ I sympathize with Richard Eisenberg, however. While it is true that the rule, "[
 
 The syntax of "ln" strikes me as a valid parallel.
 
-Further, it makes the difference between `import Foo (f) as F` and `import Foo as F` very surprising. That's -1 all by itself. I would grimace every time I tried to teach this to a new Haskeller.
+Further, this proposal makes the difference between `import Foo (f) as F` and `import Foo as F` very surprising. That's -1 all by itself. I would grimace every time I tried to teach this to a new Haskeller.
+
+In summary, I like what this proposal is trying to do, but I think it is a step backwards. It's a tough nut to crack, though. Let's see why.
 
 Alternate Proposal #1
 ------------
@@ -89,6 +91,19 @@ import qualified Data.Set
 import Data.Map (Map, foldrWithKey)
 import Data.List as L
 ```
+
+and the equivalent in Anthony Cowley's proposal would be
+
+```haskell
+import Data.Text.Format (Format) as T
+import qualified Data.Text.Format as Format (Only, Shown)
+import Data.Text (Text) as T
+import Control.Applicative
+import qualified Data.Set
+import Data.Map (Map, foldrWithKey)
+import Data.List as L
+```
+
 
 As a final note, my second proposal is *very* similar to my first, and doing away with all the whitespace changes would make them nearly identical. Except for two things:
 
