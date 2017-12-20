@@ -96,7 +96,7 @@ so we have n-1 possible last subproblems.
 Well, let's back up. The *zeroth* step is to recognize optimal substructure.
 
 Assume we have an optimal solution. Then, removing the last line break and all
-the words that follow would maintain the optimality. We knwo this because if we
+the words that follow would maintain the optimality. We know this because if we
 could find a more optimal subsolution, we could then add on the last line again
 and create a better total solution, contradicting our original assumption.
 
