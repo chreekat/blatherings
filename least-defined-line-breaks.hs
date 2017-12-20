@@ -60,8 +60,9 @@ allSolns ws =
 -- ignore the cost of the last line.
 cost :: Int -> [String] -> Int
 cost t ls | any ((>t) . length) ls = maxBound
-          | otherwise = subCost t (init ls)
-
+          | otherwise = maybe 0 (subCost t) (initMay ls)
+    where initMay [] = Nothing
+          initMay xs@(_:_) = Just (init xs)
 
 -- | The cost of a subsolution. In this case we don't discount the cost of the
 -- last line.
