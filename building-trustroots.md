@@ -54,3 +54,12 @@ can duplicate my setup. The nice thing about doing that is that we'd all be
 using the *exact* same versions of all services! I hesitate to add the file,
 however, without first discussing the strategy for keeping it up to date and
 adding documentation for using it.
+
+In the meanwhile, the entirety of this post can be summed up as:
+
+```
+nix-shell \
+    -I 'nixpkgs=/home/b/.nix-defexpr/channels/unstable' \
+    -p mongodb nodejs-8_x graphicsmagick \
+    --run 'npm start'
+```
