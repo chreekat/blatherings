@@ -1,17 +1,23 @@
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
--- just for documentationG
-{-# LANGUAGE PackageImports #-}
+{-# LANGUAGE DeriveGeneric #-}
+{-# LANGUAGE DeriveAnyClass #-}
+{-# LANGUAGE DerivingStrategies #-}
+
 import Control.Arrow
 import Control.Monad
+import Control.DeepSeq
 import Data.Foldable
 import Data.Function (on, fix)
 import Data.List
+import Data.List.NonEmpty (NonEmpty(..), (<|))
 import Data.Map (Map, (!))
 import Data.Semigroup
 import Data.Set (Set)
-import "pretty-simple" Debug.Pretty.Simple
-import "pretty-simple" Text.Pretty.Simple
+import Debug.Pretty.Simple
+import Gauge -- gauge
+import GHC.Generics
+import Text.Pretty.Simple -- pretty-simple
 import qualified Data.List.NonEmpty as N
 import qualified Data.Map as M
 import qualified Data.Set as S
@@ -67,7 +73,8 @@ order to ignore it at the top level.
 -}
 
 data Cost = Cost Int | MaxCost
-    deriving (Eq,Show,Ord)
+    deriving (Eq,Show,Ord,Generic)
+    deriving anyclass NFData
 
 -- | Add two costs
 (.+.) :: Cost -> Cost -> Cost
@@ -162,10 +169,12 @@ I know, that's still a terrible description. I'll work on it.
 -- | A Break is the index of the last word of a line. I.e. a 0 would mean break
 -- after the first word.
 newtype Break = Break { unBreak :: Int }
-    deriving (Eq, Ord, Num, Show)
+    deriving (Eq, Ord, Show, Generic)
+    deriving anyclass NFData
+    deriving newtype Num
 
-data Soln = S { solnCost :: Cost, solnSoln :: [Break] }
-    deriving Show
+data Soln a = S { solnCost :: Cost, solnSoln :: [a] }
+    deriving (Show, Generic, NFData)
 
 unshift :: [a] -> a -> [a]
 unshift xs x = xs ++ [x]
@@ -183,9 +192,9 @@ segment s e = slice s (e - s + 1)
 
 -- | Just return each solution. We won't try to get tricky with the last line
 -- yet.
---optimalSubSolns :: Int -> [String] -> [Soln]
---optimalSubSolns len [] = []
-optimalSubSolns len (N.fromList -> xs) =
+--optimalSubSolnsBad :: Int -> [String] -> [Soln]
+--optimalSubSolnsBad len [] = []
+optimalSubSolnsBad len (N.fromList -> xs) =
     let n = N.length xs
         -- | slacks[i,j] is how much slack space exists for a line that starts
         -- at word i and ends at word j, inclusive
@@ -235,6 +244,66 @@ brute force method. But it's still VERY slow. Time to start profiling!
 
 -}
 
+gaugeBad = Gauge.defaultMainWith
+    defaultConfig {
+        displayMode = Condensed
+    }
+    [ bench
+        (show w <> " words, length " <> show len)
+        (nf (optimalSubSolnsBad len) (replicate w "a"))
+    | w <- [20,40..400]
+    , len <- [10,20..50]
+    ]
+
+{-
+
+NOPE! Still O(N^2), dad gum it.
+
+Ah! Ah! I need a shareable point somewhere!
+
+NINJAEDIT: Hahaahah O(N^2) was the GOAL! I win! (?)
+
+Anyway, I went and rewrote it in a much more functional style. Enjoy:
+-}
+
+optimalSubSolns :: Int -> String -> [String]
+optimalSubSolns len input =
+    let subSolns = fmap solve (N.inits (words input))
+        solve [] = S (Cost 0) []
+        solve (line : lines) =
+            let candidates = tails1 (line :| lines)
+            in minimumOn solnCost (N.zipWith tryThis subSolns candidates)
+        tryThis (S subsolnCost subsoln) (unwords -> thisCandidate)
+            = S (subsolnCost .+. cost len thisCandidate)
+                (subsoln ++ [thisCandidate])
+    in solnSoln (N.last subSolns)
+
+-- We know init (tails (x : xs)) is nonempty and total. Let's encapsulate this
+-- fact.
+--
+--            init (tails (x:[]))
+--          = init ([x] : tails [])
+--          = [x] : (init (tails []))
+--          = [x] : (init ([] : []))
+--          = [[x]]
+--          TADA
+--
+-- prop> \(x:|xs) -> init (tails (x : xs)) == ((x : xs) : init (tails xs)
+tails1 :: NonEmpty a -> NonEmpty [a]
+tails1 = N.fromList . N.init . N.tails
+
+--gaugeNew = print "hello"
+gaugeNew = Gauge.defaultMainWith
+    defaultConfig {
+        displayMode = Condensed
+        , csvFile = Just "gauge.csv"
+    }
+    [ bench
+        (show w <> " words, length " <> show len)
+        (nf (optimalSubSolns len) (unwords (replicate w "a")))
+    | w <- [20,40..400]
+    , len <- [20]
+    ]
 
 wrap :: [Break] -> [String] -> [String]
 wrap [] ws = [unwords ws]
@@ -243,6 +312,7 @@ wrap (Break b:bs) ws =
         decr x (Break y) = Break (y - x)
     in line : wrap (map (decr b) bs) rest
 
+{-
 main :: IO ()
 main =
     let
@@ -252,4 +322,5 @@ main =
         --     ++ " My favorite text is usually comprised of many letters and words, given that this is how you comprise text."
         --     ++ " My favorite text is usually comprised of mmmmmmmany letters and words, given that this is how you comprise text."
         txt = replicate 800 "aaa"
-    in putStrLn $ unlines $ flip wrap txt $ solnSoln $ last $ optimalSubSolns 30 $ txt
+    in putStrLn $ unlines $ flip wrap txt $ solnSoln $ last $ optimalSubSolnsBad 30 $ txt
+-}
