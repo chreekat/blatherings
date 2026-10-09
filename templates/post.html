@@ -3,8 +3,7 @@
 $if(draft)$<p class="draft">Draft — not published</p>
 $endif$<h1 class="p-name">$title$</h1>
 <p class="meta"><a class="u-url" href="$url$"><time class="dt-published" datetime="$isodate$">$date$</time></a>$if(updatedDate)$ · updated <time class="dt-updated" datetime="$updatedIso$">$updatedDate$</time>$endif$$if(tags)$ · $tags$$endif$</p>
-$if(epistemic)$<p class="epistemic"><em>Epistemic status:</em> $epistemic$</p>
-$endif$</header>
+</header>
 $if(toc)$<nav class="toc" aria-label="Contents">
 $toc$
 </nav>

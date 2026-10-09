@@ -178,7 +178,7 @@ writerOptions = defaultHakyllWriterOptions { writerHTMLMathMethod = MathML }
 
 siteCtx :: Context String
 siteCtx = constField "root" root
-    <> foldMap escapedMetadataField ["title", "description", "epistemic"]
+    <> foldMap escapedMetadataField ["title", "description"]
     <> field "cssVersion" (const (fingerprint . itemBody <$> load "css/main.css"))
     <> prettyUrlField
     <> defaultContext
