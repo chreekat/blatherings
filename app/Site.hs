@@ -72,7 +72,7 @@ rules visibility = do
         route idRoute
         compile $ do
             items <- recentFirst =<< loadAll tagged
-            let tagCtx = constField "title" ("Tagged “" <> tag <> "”")
+            let tagCtx = constField "title" ("Tagged “" <> escapeHtml tag <> "”")
                     <> constField "feed" (toUrl (toFilePath (tagFeedId tags tag)))
                     <> listField "posts" ctx (pure items)
                     <> siteCtx
@@ -128,6 +128,11 @@ rules visibility = do
 tagFeedId :: Tags -> String -> Identifier
 tagFeedId tags tag = fromFilePath (takeDirectory (toFilePath (tagsMakeId tags tag)) </> "atom.xml")
 
+-- | Front-matter text, safe in HTML and XML.
+escapedMetadataField :: String -> Context a
+escapedMetadataField key = field key $ \i ->
+    maybe (noResult ("no " <> key)) (pure . escapeHtml) =<< getMetadataField (itemIdentifier i) key
+
 -- | The site chrome around any page, with tidy links.
 page :: Context String -> Item String -> Compiler (Item String)
 page ctx item = do
@@ -146,6 +151,7 @@ writerOptions = defaultHakyllWriterOptions { writerHTMLMathMethod = MathML }
 
 siteCtx :: Context String
 siteCtx = constField "root" root
+    <> foldMap escapedMetadataField ["title", "description"]
     <> field "cssVersion" (const (fingerprint . itemBody <$> load "css/main.css"))
     <> prettyUrlField
     <> defaultContext
