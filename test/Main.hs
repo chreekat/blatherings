@@ -5,10 +5,12 @@ import Test.Tasty
 import Test.Tasty.HUnit
 
 import Blatherings
+import qualified HitsSpec
 
 main :: IO ()
 main = defaultMain $ testGroup "Blatherings"
-    [ testGroup "postPath"
+    [ HitsSpec.tests
+    , testGroup "postPath"
         [ testCase "drops the directory and date prefix" $
             postPath "posts/2024-09-14-vim-fold-haskell-imports.md"
                 @?= Right "vim-fold-haskell-imports/index.html"

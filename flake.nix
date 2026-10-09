@@ -47,6 +47,11 @@
         inherit generator;
       };
 
+      apps.${system}.hits = {
+        type = "app";
+        program = "${generator}/bin/hits";
+      };
+
       checks.${system} = {
         inherit generator;
         site = site "published";

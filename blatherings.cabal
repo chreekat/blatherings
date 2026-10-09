@@ -14,10 +14,14 @@ common shared
 library
     import:          shared
     hs-source-dirs:  src
-    exposed-modules: Blatherings
+    exposed-modules:
+        Blatherings
+        Blatherings.Hits
     build-depends:
+        aeson,
         base,
         bytestring,
+        containers,
         crypton,
         filepath,
         memory,
@@ -40,14 +44,25 @@ executable site
         pandoc-types,
         time
 
+executable hits
+    import:         shared
+    hs-source-dirs: app
+    main-is:        Hits.hs
+    build-depends:
+        base,
+        blatherings,
+        bytestring
+
 test-suite spec
     import:         shared
     type:           exitcode-stdio-1.0
     hs-source-dirs: test
     main-is:        Main.hs
+    other-modules:  HitsSpec
     build-depends:
         base,
         blatherings,
+        bytestring,
         tasty,
         tasty-hunit,
         time

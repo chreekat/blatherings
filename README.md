@@ -49,4 +49,21 @@ One-time setup:
 
 Until the secrets exist, CI only builds and checks.
 
+## Readership
+
+Each page loads `/hit.js`, which, on words.chreekat.net only, fetches a
+one-pixel GIF from `https://hits.chreekat.net/hit` carrying the page's path and
+referrer. On puny, nginx answers from memory and appends a JSON line to
+`/var/log/nginx/hits.jsonl` (`nixos/mods/hits.nix` in the dotfiles). No
+addresses or cookies are kept, so there are views but no unique visitors. Readers
+without JavaScript, and so most bots, go uncounted. If puny is slow or down,
+pages don't notice.
+
+To see the numbers:
+
+    ssh puny.chreekat.net 'sudo sh -c "zcat -f /var/log/nginx/hits.jsonl*"' | nix run .#hits
+
+One-time setup: point `hits.chreekat.net` at puny before deploying it, so ACME
+can issue the certificate.
+
 <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/"><img alt="Creative Commons License" style="border-width:0" src="https://i.creativecommons.org/l/by-sa/4.0/88x31.png" /></a><br />All aforementioned words are licensed under a <a rel="license" href="http://creativecommons.org/licenses/by-sa/4.0/">Creative Commons Attribution-ShareAlike 4.0 International License</a>.
