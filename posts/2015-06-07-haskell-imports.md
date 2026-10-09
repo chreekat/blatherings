@@ -1,5 +1,7 @@
-The long reply
-==============
+---
+title: "The long reply: Haskell import syntax"
+tags: code, haskell
+---
 
 On Wednesday, June 3, 2015 at 12:02:17 PM UTC-7, Anthony Cowley wrote:
 > 

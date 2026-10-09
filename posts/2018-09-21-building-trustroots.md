@@ -1,4 +1,7 @@
-# Building Trustroots
+---
+title: Building Trustroots
+tags: code, nix
+---
 
 After a couple hours' work, I can successfully run Trustroots locally, and I
 have a small repertoire of things to try when it fails to run. I'll describe how

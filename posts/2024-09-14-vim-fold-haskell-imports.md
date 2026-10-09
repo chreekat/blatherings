@@ -1,3 +1,8 @@
+---
+title: Folding Haskell imports in Vim
+tags: code, haskell, vim
+---
+
 UPDATE: Now folds exports, too.
 
 Put this in ~/.vim/after/ftplugin/haskell.vim and pray to $deity.
