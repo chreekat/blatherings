@@ -141,6 +141,20 @@ article > header { margin-bottom: 2rem; }
 .meta { color: var(--muted); font-size: 0.9rem; margin: 0; }
 .meta a { color: inherit; }
 
+.epistemic { color: var(--muted); font-size: 0.9rem; margin: 0.6rem 0 0; }
+
+.toc {
+  margin: 0 0 2rem;
+  padding: 0.75rem 1rem;
+  border-left: 3px solid var(--rule);
+  font-size: 0.9rem;
+}
+.toc ul { margin: 0; padding-left: 1.1rem; list-style: none; }
+.toc > ul { padding-left: 0; }
+.toc li + li { margin-top: 0.1em; }
+
+.reply { margin-top: 2.5rem; font-size: 0.9rem; }
+
 .draft {
   display: inline-block;
   padding: 0 0.5em;

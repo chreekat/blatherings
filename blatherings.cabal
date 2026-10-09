@@ -21,7 +21,9 @@ library
         crypton,
         filepath,
         memory,
-        text
+        network-uri,
+        text,
+        time
 
 executable site
     import:         shared
@@ -29,11 +31,14 @@ executable site
     main-is:        Site.hs
     ghc-options:    -threaded -rtsopts
     build-depends:
+        aeson,
         base,
         blatherings,
         filepath,
         hakyll,
-        pandoc
+        pandoc,
+        pandoc-types,
+        time
 
 test-suite spec
     import:         shared
@@ -44,4 +49,5 @@ test-suite spec
         base,
         blatherings,
         tasty,
-        tasty-hunit
+        tasty-hunit,
+        time

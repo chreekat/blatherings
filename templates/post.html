@@ -1,8 +1,15 @@
-<article>
+<article class="h-entry">
 <header>
 $if(draft)$<p class="draft">Draft — not published</p>
-$endif$<h1>$title$</h1>
-<p class="meta"><time datetime="$isodate$">$date$</time>$if(tags)$ · $tags$$endif$</p>
-</header>
+$endif$<h1 class="p-name">$title$</h1>
+<p class="meta"><a class="u-url" href="$url$"><time class="dt-published" datetime="$isodate$">$date$</time></a>$if(updatedDate)$ · updated <time class="dt-updated" datetime="$updatedIso$">$updatedDate$</time>$endif$$if(tags)$ · $tags$$endif$</p>
+$if(epistemic)$<p class="epistemic"><em>Epistemic status:</em> $epistemic$</p>
+$endif$</header>
+$if(toc)$<nav class="toc" aria-label="Contents">
+$toc$
+</nav>
+$endif$<div class="e-content">
 $body$
+</div>
+<p class="reply"><a href="$reply$">Reply by email</a></p>
 </article>

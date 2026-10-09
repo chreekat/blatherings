@@ -2,11 +2,17 @@
 
 module Main (main) where
 
+import qualified Data.Aeson as Aeson
+import qualified Data.Aeson.KeyMap as KeyMap
 import Data.List (isPrefixOf)
+import Data.Time.Clock (UTCTime (..))
+import Data.Time.Format (defaultTimeLocale, formatTime)
 import Hakyll
 import System.Environment (lookupEnv)
 import System.FilePath (takeDirectory, (</>))
 import Text.Pandoc.Extensions (Extension (Ext_blank_before_blockquote), disableExtension)
+import Text.Pandoc.Definition (Pandoc (..))
+import Text.Pandoc.Writers.Shared (toTableOfContents)
 import Text.Pandoc.Options (HTMLMathMethod (MathML), ReaderOptions (..), WriterOptions (..))
 
 import Blatherings
@@ -63,10 +69,12 @@ rules visibility = do
 
     match posts $ do
         route $ customRoute (either error id . postPath . toFilePath)
-        compile $ pandocCompilerWith readerOptions writerOptions
-            >>= saveSnapshot "content"
-            >>= loadAndApplyTemplate "templates/post.html" ctx
-            >>= page ctx
+        compile $ do
+            doc <- readPandocWith readerOptions =<< getResourceBody
+            tocCtx <- tableOfContents doc
+            saveSnapshot "content" (writePandocWith writerOptions doc)
+                >>= loadAndApplyTemplate "templates/post.html" (tocCtx <> ctx)
+                >>= page ctx
 
     tagsRules tags $ \tag tagged -> do
         route idRoute
@@ -128,10 +136,29 @@ rules visibility = do
 tagFeedId :: Tags -> String -> Identifier
 tagFeedId tags tag = fromFilePath (takeDirectory (toFilePath (tagsMakeId tags tag)) </> "atom.xml")
 
+-- | A @toc@ field, for posts whose front matter asks with @toc: true@.
+tableOfContents :: Item Pandoc -> Compiler (Context String)
+tableOfContents doc = do
+    metadata <- getMetadata (itemIdentifier doc)
+    pure $ case lookupBool "toc" metadata of
+        Just True -> constField "toc" (itemBody (writePandocWith writerOptions (contents <$> doc)))
+        _ -> mempty
+  where
+    contents (Pandoc meta blocks) = Pandoc meta [toTableOfContents writerOptions blocks]
+    lookupBool key metadata = case KeyMap.lookup key metadata of
+        Just (Aeson.Bool b) -> Just b
+        _ -> Nothing
+
 -- | Front-matter text, safe in HTML and XML.
 escapedMetadataField :: String -> Context a
 escapedMetadataField key = field key $ \i ->
     maybe (noResult ("no " <> key)) (pure . escapeHtml) =<< getMetadataField (itemIdentifier i) key
+
+-- | A front-matter date, formatted.
+metadataDateField :: String -> String -> String -> Context a
+metadataDateField name key fmt = field name $ \i -> do
+    raw <- maybe (noResult ("no " <> key)) pure =<< getMetadataField (itemIdentifier i) key
+    either fail (pure . formatTime defaultTimeLocale fmt . (`UTCTime` 0)) (parseDay raw)
 
 -- | The site chrome around any page, with tidy links.
 page :: Context String -> Item String -> Compiler (Item String)
@@ -151,7 +178,7 @@ writerOptions = defaultHakyllWriterOptions { writerHTMLMathMethod = MathML }
 
 siteCtx :: Context String
 siteCtx = constField "root" root
-    <> foldMap escapedMetadataField ["title", "description"]
+    <> foldMap escapedMetadataField ["title", "description", "epistemic"]
     <> field "cssVersion" (const (fingerprint . itemBody <$> load "css/main.css"))
     <> prettyUrlField
     <> defaultContext
@@ -159,6 +186,9 @@ siteCtx = constField "root" root
 postCtx :: Tags -> Context String
 postCtx tags = dateField "date" "%-d %B %Y"
     <> dateField "isodate" "%Y-%m-%d"
+    <> metadataDateField "updatedDate" "updated" "%-d %B %Y"
+    <> metadataDateField "updatedIso" "updated" "%Y-%m-%d"
+    <> field "reply" (fmap (replyMailto "b@chreekat.net") . flip getMetadataField' "title" . itemIdentifier)
     <> tagsField "tags" tags
     <> boolField "draft" (("drafts/" `isPrefixOf`) . toFilePath . itemIdentifier)
     <> siteCtx
@@ -166,6 +196,7 @@ postCtx tags = dateField "date" "%-d %B %Y"
 -- | Atom entries carry full content with links that work off-site.
 feedCtx :: Context String -> Context String
 feedCtx ctx = field "description" (pure . withUrls (absoluteUrl root) . itemBody)
+    <> metadataDateField "updated" "updated" "%Y-%m-%dT%H:%M:%SZ"
     <> ctx
 
 -- | @url@, without @index.html@.

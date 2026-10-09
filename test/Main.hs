@@ -1,5 +1,6 @@
 module Main (main) where
 
+import Data.Time.Calendar (fromGregorian)
 import Test.Tasty
 import Test.Tasty.HUnit
 
@@ -41,6 +42,17 @@ main = defaultMain $ testGroup "Blatherings"
                 @?= "//example.com/"
         , testCase "keeps fragments" $
             absoluteUrl "https://words.chreekat.net" "#fn1" @?= "#fn1"
+        ]
+    , testGroup "parseDay"
+        [ testCase "reads an ISO date" $
+            parseDay "2026-10-09" @?= Right (fromGregorian 2026 10 9)
+        , testCase "rejects an impossible date" $
+            assertBool "expected Left" (isLeft (parseDay "2026-13-01"))
+        ]
+    , testGroup "replyMailto"
+        [ testCase "addresses a reply to the post's title" $
+            replyMailto "b@chreekat.net" "Riding & writing"
+                @?= "mailto:b@chreekat.net?subject=Re%3A%20Riding%20%26%20writing"
         ]
     , testGroup "fingerprint"
         [ testCase "is a short hex prefix of the content's SHA-256" $

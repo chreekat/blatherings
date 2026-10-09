@@ -12,6 +12,9 @@ at `/slug/`, so the slug is permanent once published.
 title: Riding the Pamir Highway
 tags: cycling, trekking
 description: Optional, for link previews.
+updated: 2026-11-02          # optional, when revised
+epistemic: Anecdotes, n=1.   # optional "Epistemic status" line
+toc: true                    # optional table of contents
 ---
 
 Words.
