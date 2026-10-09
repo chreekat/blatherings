@@ -1,0 +1,11 @@
+$if(home)$$else$<h1>$title$</h1>
+$endif$<ol class="posts" reversed>
+$for(posts)$
+  <li>
+    <time datetime="$isodate$">$isodate$</time>
+    <a href="$url$">$title$</a>$if(draft)$ <span class="draft">draft</span>$endif$
+  </li>
+$endfor$
+</ol>
+$if(feed)$<p class="subscribe"><a href="$feed$">Atom feed</a></p>
+$endif$

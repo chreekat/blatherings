@@ -1,0 +1,8 @@
+<article>
+<header>
+$if(draft)$<p class="draft">Draft — not published</p>
+$endif$<h1>$title$</h1>
+<p class="meta"><time datetime="$isodate$">$date$</time>$if(tags)$ · $tags$$endif$</p>
+</header>
+$body$
+</article>

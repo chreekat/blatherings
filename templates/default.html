@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>$if(home)$words · chreekat$else$$title$ · words$endif$</title>
+$if(description)$<meta name="description" content="$description$">
+$endif$<meta name="color-scheme" content="light dark">
+<meta property="og:title" content="$title$">
+<meta property="og:site_name" content="words">
+<link rel="canonical" href="$root$$url$">
+<link rel="stylesheet" href="/css/main.css?v=$cssVersion$">
+<link rel="alternate" type="application/atom+xml" title="words" href="/atom.xml">
+$if(feed)$<link rel="alternate" type="application/atom+xml" title="$title$" href="$feed$">
+$endif$</head>
+<body>
+<header class="masthead">
+  <a class="site-name" href="/">words</a>
+  <nav>
+    <a href="/tags/">tags</a>
+    <a href="/atom.xml">feed</a>
+    <a href="https://www.chreekat.net/">chreekat</a>
+  </nav>
+</header>
+<main>
+$body$
+</main>
+<footer class="colophon">
+  Words by Bryan Richter, licensed
+  <a rel="license" href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.
+</footer>
+</body>
+</html>

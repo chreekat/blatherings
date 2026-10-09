@@ -1,0 +1,47 @@
+cabal-version: 3.0
+name:          blatherings
+version:       0.1.0.0
+synopsis:      Generator for words.chreekat.net
+author:        Bryan Richter
+maintainer:    b@chreekat.net
+license:       NONE
+build-type:    Simple
+
+common shared
+    default-language: GHC2021
+    ghc-options:      -Wall
+
+library
+    import:          shared
+    hs-source-dirs:  src
+    exposed-modules: Blatherings
+    build-depends:
+        base,
+        bytestring,
+        crypton,
+        filepath,
+        memory,
+        text
+
+executable site
+    import:         shared
+    hs-source-dirs: app
+    main-is:        Site.hs
+    ghc-options:    -threaded -rtsopts
+    build-depends:
+        base,
+        blatherings,
+        filepath,
+        hakyll,
+        pandoc
+
+test-suite spec
+    import:         shared
+    type:           exitcode-stdio-1.0
+    hs-source-dirs: test
+    main-is:        Main.hs
+    build-depends:
+        base,
+        blatherings,
+        tasty,
+        tasty-hunit
