@@ -1,0 +1,37 @@
+name: publish
+
+on:
+  push:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: cachix/install-nix-action@13d8dd58da0234aa297dedd986986ccb8e7f3e24 # v31.11.1
+
+      - name: Check
+        run: nix flake check -L
+
+      # Branches other than master become preview deployments, drafts included.
+      - name: Build
+        run: nix build -L .#${{ github.ref_name == 'master' && 'default' || 'drafts' }}
+
+      - name: Deploy
+        if: env.CLOUDFLARE_API_TOKEN != ''
+        run: >
+          nix develop .#deploy --command
+          wrangler pages deploy result/
+          --project-name=words-chreekat
+          --branch=${{ github.ref_name }}
+          --commit-hash=${{ github.sha }}
